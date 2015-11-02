@@ -20,13 +20,21 @@ const (
 func Write(mapData map[string]interface{}) error {
 	var tList, oList []string
 	temp := mapData[DATA_TEMPLATEFILE]
-	switch temp.(type) {
+	switch tt := temp.(type) {
 	case string:
 		tList = append(tList, temp.(string))
 	case []string:
 		tList = temp.([]string)
+	case []interface{}:
+		for _, v := range temp.([]interface{}) {
+			if strData, ok := v.(string); ok {
+				tList = append(tList, strData)
+			} else {
+				return errors.New("template set error,only string can be recognized")
+			}
+		}
 	default:
-		return errors.New("template set error,only string can be recognized")
+		return errors.New(fmt.Sprintf("template set error,unknown data type %T", tt))
 	}
 
 	out := mapData[DATA_OUTPUTFILE]
@@ -35,8 +43,16 @@ func Write(mapData map[string]interface{}) error {
 		oList = append(oList, out.(string))
 	case []string:
 		oList = out.([]string)
+	case []interface{}:
+		for _, v := range out.([]interface{}) {
+			if strData, ok := v.(string); ok {
+				oList = append(oList, strData)
+			} else {
+				return errors.New("outfile set error,only string can be recognized")
+			}
+		}
 	default:
-		return errors.New(fmt.Sprintf("outfile set error,only string can be recognized %T", ot))
+		return errors.New(fmt.Sprintf("outfile set error,unknown data type %T", ot))
 	}
 	if len(tList) != len(oList) {
 		return errors.New("number of template and outfile are not equal")

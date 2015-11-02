@@ -21,6 +21,18 @@ func Test_Write(t *testing.T) {
 	data, err := Read("..\\test\\d1.yaml")
 	if err != nil {
 		t.Errorf("something error %s", err)
+		t.Failed()
+	}
+	t.Logf("data %v", data)
+	err = Write(data)
+	if err != nil {
+		t.Errorf("write error %s", err)
+	}
+
+	data, err = Read("..\\test\\d2.yaml")
+	if err != nil {
+		t.Errorf("something error %s", err)
+		t.Failed()
 	}
 	t.Logf("data %v", data)
 	err = Write(data)
